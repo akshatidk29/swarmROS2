@@ -1,0 +1,21 @@
+[0.291s] Invoking command in '/home/akshatidk29/Desktop/ros2WS1/src/bot': PYTHONPATH=/home/akshatidk29/Desktop/ros2WS1/build/bot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/bot build --build-base /home/akshatidk29/Desktop/ros2WS1/build/bot/build install --record /home/akshatidk29/Desktop/ros2WS1/build/bot/install.log --single-version-externally-managed install_data
+[0.399s] running egg_info
+[0.400s] writing ../../build/bot/bot.egg-info/PKG-INFO
+[0.400s] writing dependency_links to ../../build/bot/bot.egg-info/dependency_links.txt
+[0.400s] writing entry points to ../../build/bot/bot.egg-info/entry_points.txt
+[0.400s] writing requirements to ../../build/bot/bot.egg-info/requires.txt
+[0.400s] writing top-level names to ../../build/bot/bot.egg-info/top_level.txt
+[0.401s] reading manifest file '../../build/bot/bot.egg-info/SOURCES.txt'
+[0.401s] writing manifest file '../../build/bot/bot.egg-info/SOURCES.txt'
+[0.401s] running build
+[0.402s] running build_py
+[0.402s] running install
+[0.402s] running install_lib
+[0.402s] running install_data
+[0.402s] running install_egg_info
+[0.403s] removing '/home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot-0.0.0-py3.10.egg-info' (and everything under it)
+[0.403s] Copying ../../build/bot/bot.egg-info to /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot-0.0.0-py3.10.egg-info
+[0.404s] running install_scripts
+[0.419s] Installing avoid script to /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/bot
+[0.419s] writing list of installed files to '/home/akshatidk29/Desktop/ros2WS1/build/bot/install.log'
+[0.439s] Invoked command in '/home/akshatidk29/Desktop/ros2WS1/src/bot' returned '0': PYTHONPATH=/home/akshatidk29/Desktop/ros2WS1/build/bot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/bot build --build-base /home/akshatidk29/Desktop/ros2WS1/build/bot/build install --record /home/akshatidk29/Desktop/ros2WS1/build/bot/install.log --single-version-externally-managed install_data
