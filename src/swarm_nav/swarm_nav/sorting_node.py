@@ -32,7 +32,7 @@ class SortingNode(Node):
         # --- Q-Table Load ---
         self.q_table = {}
         q_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'q_table.pkl')
-        if os.path.exists(q_path):
+        if False: # os.path.exists(q_path):
             with open(q_path, 'rb') as f:
                 self.q_table = pickle.load(f)
             self.get_logger().info(f"[{self.name}] Loaded Q-table with {len(self.q_table)} states.")
@@ -82,14 +82,17 @@ class SortingNode(Node):
         self.create_subscription(String, '/swarm/placed', self._cb_placed, 10)
         self.create_subscription(String, '/swarm/picked', self._cb_picked, 10)
         self.create_subscription(String, '/swarm/bin_locations', self._cb_bin_loc, 10)
+        self.create_subscription(String, '/swarm/obj_locations', self._cb_obj_loc, 10)
         
         self.pub_cmd = self.create_publisher(Twist, 'cmd_vel', 10)
         self.pub_visited = self.create_publisher(String, '/swarm/visited', 10)
         self.pub_placed = self.create_publisher(String, '/swarm/placed', 10)
         self.pub_picked = self.create_publisher(String, '/swarm/picked', 10)
         self.pub_bin_loc = self.create_publisher(String, '/swarm/bin_locations', 10)
+        self.pub_obj_loc = self.create_publisher(String, '/swarm/obj_locations', 10)
         
         self.shared_bins = {}
+        self.shared_objs = {}
         
         self.create_subscription(PoseStamped, '/swarm/poses', self._cb_swarm, 10)
         self.pub_pose = self.create_publisher(PoseStamped, '/swarm/poses', 10)
@@ -134,12 +137,12 @@ class SortingNode(Node):
             self.visited_grid.add((float(parts[0]), float(parts[1])))
 
     def _cb_placed(self, msg):
-        color = msg.data
+        color = msg.data.split(',')[0]
         if color in self.global_placed:
             self.global_placed[color] = True
 
     def _cb_picked(self, msg):
-        color = msg.data
+        color = msg.data.split(',')[0]
         if color in self.global_picked:
             self.global_picked[color] = True
 
@@ -148,6 +151,13 @@ class SortingNode(Node):
         if len(parts) == 3:
             cid = int(parts[0])
             self.shared_bins[cid] = (float(parts[1]), float(parts[2]))
+
+    def _cb_obj_loc(self, msg):
+        parts = msg.data.split(',')
+        if len(parts) == 4: # cid, x, y, robot_name
+            cid = int(parts[0])
+            if cid not in self.shared_objs:
+                self.shared_objs[cid] = (float(parts[1]), float(parts[2]), parts[3])
 
     def _cb_swarm(self, msg):
         if msg.header.frame_id != self.name:
@@ -265,7 +275,7 @@ class SortingNode(Node):
                 
                 # Signal global placed
                 msg = String()
-                msg.data = color_name
+                msg.data = f"{color_name},{self.name},{self.x:.2f},{self.y:.2f}"
                 self.pub_placed.publish(msg)
                 self.global_placed[color_name] = True
                 
@@ -287,6 +297,20 @@ class SortingNode(Node):
                     msg = String()
                     msg.data = f"{cid},{bin_x:.2f},{bin_y:.2f}"
                     self.pub_bin_loc.publish(msg)
+
+        # Broadcast objects we currently see
+        for cid, (td, is_close, area, dist) in self.obj_detections.items():
+            if dist < 8.0:
+                angle_offset = 0.0
+                if td == 1: angle_offset = 0.3
+                elif td == 2: angle_offset = -0.3
+                obj_x = self.x + dist * math.cos(self.yaw + angle_offset)
+                obj_y = self.y + dist * math.sin(self.yaw + angle_offset)
+                if cid not in self.shared_objs:
+                    self.shared_objs[cid] = (obj_x, obj_y, self.name)
+                    msg = String()
+                    msg.data = f"{cid},{obj_x:.2f},{obj_y:.2f},{self.name}"
+                    self.pub_obj_loc.publish(msg)
 
         tt, td, is_close, cid = self._get_camera_state()
         wf_raw = self._lidar_wall_front()
@@ -328,7 +352,7 @@ class SortingNode(Node):
                 
                 # Signal global picked
                 msg = String()
-                msg.data = colors[cid]
+                msg.data = f"{colors[cid]},{self.name},{self.x:.2f},{self.y:.2f}"
                 self.pub_picked.publish(msg)
                 self.global_picked[colors[cid]] = True
                 

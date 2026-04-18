@@ -29,6 +29,7 @@ setup(
         'console_scripts': [
             'sorting_node = swarm_nav.sorting_node:main',
             'randomizer_node = swarm_nav.randomizer_node:main',
+            'logger_node = swarm_nav.logger_node:main',
         ],
     },
 )

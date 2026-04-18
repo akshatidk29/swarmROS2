@@ -1,0 +1,26 @@
+running egg_info
+writing ../../build/swarm_nav/swarm_nav.egg-info/PKG-INFO
+writing dependency_links to ../../build/swarm_nav/swarm_nav.egg-info/dependency_links.txt
+writing entry points to ../../build/swarm_nav/swarm_nav.egg-info/entry_points.txt
+writing requirements to ../../build/swarm_nav/swarm_nav.egg-info/requires.txt
+writing top-level names to ../../build/swarm_nav/swarm_nav.egg-info/top_level.txt
+reading manifest file '../../build/swarm_nav/swarm_nav.egg-info/SOURCES.txt'
+writing manifest file '../../build/swarm_nav/swarm_nav.egg-info/SOURCES.txt'
+running build
+running build_py
+copying swarm_nav/sorting_node.py -> /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_nav/build/lib/swarm_nav
+copying swarm_nav/q_table.pkl -> /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_nav/build/lib/swarm_nav
+running install
+running install_lib
+copying /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_nav/build/lib/swarm_nav/sorting_node.py -> /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/python3.10/site-packages/swarm_nav
+copying /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_nav/build/lib/swarm_nav/q_table.pkl -> /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/python3.10/site-packages/swarm_nav
+byte-compiling /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/python3.10/site-packages/swarm_nav/sorting_node.py to sorting_node.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/python3.10/site-packages/swarm_nav-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/swarm_nav/swarm_nav.egg-info to /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/python3.10/site-packages/swarm_nav-0.0.0-py3.10.egg-info
+running install_scripts
+Installing logger_node script to /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/swarm_nav
+Installing randomizer_node script to /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/swarm_nav
+Installing sorting_node script to /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav/lib/swarm_nav
+writing list of installed files to '/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_nav/install.log'

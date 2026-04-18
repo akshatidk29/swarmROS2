@@ -107,4 +107,18 @@ def generate_launch_description():
     )
     ld.add_action(randomizer_node)
 
+    # Global Logger Node
+    logger_node = TimerAction(
+        period=2.0,
+        actions=[
+            Node(
+                package='swarm_nav',
+                executable='logger_node',
+                name='logger_node',
+                output='screen'
+            )
+        ]
+    )
+    ld.add_action(logger_node)
+
     return ld

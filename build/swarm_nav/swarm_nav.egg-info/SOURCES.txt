@@ -11,6 +11,7 @@ setup.py
 resource/swarm_nav
 swarm_nav/__init__.py
 swarm_nav/camera_processor.py
+swarm_nav/logger_node.py
 swarm_nav/q_table.pkl
 swarm_nav/randomizer_node.py
 swarm_nav/rl_env.py
