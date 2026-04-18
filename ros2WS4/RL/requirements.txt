@@ -1,0 +1,12 @@
+# RL training dependencies for ros2WS4
+# Install with: pip install -r requirements.txt
+
+stable-baselines3[extra]>=2.1
+gymnasium>=0.29
+pygame>=2.5
+torch>=2.0
+tensorboard
+matplotlib
+numpy
+opencv-python
+pybullet

@@ -1,0 +1,13 @@
+{
+  "duration_s": 103.3,
+  "objects_picked_up": 10,
+  "objects_delivered": 9,
+  "collisions": {
+    "robot_1": 2,
+    "robot_2": 8,
+    "robot_3": 0,
+    "robot_4": 2
+  },
+  "coverage_pct": 66.7,
+  "timestamp": "2026-04-17T20:45:54.223017"
+}
