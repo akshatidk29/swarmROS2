@@ -62,6 +62,10 @@ class SortingNode(Node):
         self.dwell_active = False
         self.dwell_start_time = 0.0
 
+        self.nav_mode = "NORMAL"
+        self.nav_mode_start = 0.0
+        self.wf_dir = 2
+
         self.last_turn_dir = 1
         self.last_action = 0
         self.last_action_reason = ""
@@ -77,11 +81,15 @@ class SortingNode(Node):
         self.create_subscription(String, '/swarm/visited', self._cb_visited, 10)
         self.create_subscription(String, '/swarm/placed', self._cb_placed, 10)
         self.create_subscription(String, '/swarm/picked', self._cb_picked, 10)
+        self.create_subscription(String, '/swarm/bin_locations', self._cb_bin_loc, 10)
         
         self.pub_cmd = self.create_publisher(Twist, 'cmd_vel', 10)
         self.pub_visited = self.create_publisher(String, '/swarm/visited', 10)
         self.pub_placed = self.create_publisher(String, '/swarm/placed', 10)
         self.pub_picked = self.create_publisher(String, '/swarm/picked', 10)
+        self.pub_bin_loc = self.create_publisher(String, '/swarm/bin_locations', 10)
+        
+        self.shared_bins = {}
         
         self.create_subscription(PoseStamped, '/swarm/poses', self._cb_swarm, 10)
         self.pub_pose = self.create_publisher(PoseStamped, '/swarm/poses', 10)
@@ -135,6 +143,12 @@ class SortingNode(Node):
         if color in self.global_picked:
             self.global_picked[color] = True
 
+    def _cb_bin_loc(self, msg):
+        parts = msg.data.split(',')
+        if len(parts) == 3:
+            cid = int(parts[0])
+            self.shared_bins[cid] = (float(parts[1]), float(parts[2]))
+
     def _cb_swarm(self, msg):
         if msg.header.frame_id != self.name:
             self.other_robots[msg.header.frame_id] = (msg.pose.position.x, msg.pose.position.y)
@@ -173,6 +187,18 @@ class SortingNode(Node):
             
         return 1 if right_points >= left_points else 2
 
+    def _lidar_wall_side(self, check_left=True):
+        if not self.last_scan: return False
+        min_angle = math.radians(40)
+        max_angle = math.radians(110)
+        count = 0
+        for i, d in enumerate(self.last_scan.ranges):
+            if d < 0.12 or math.isnan(d) or math.isinf(d): continue
+            a = norm_angle(self.last_scan.angle_min + i*self.last_scan.angle_increment)
+            if check_left and min_angle <= a <= max_angle and d < 0.6: count += 1
+            elif not check_left and -max_angle <= a <= -min_angle and d < 0.6: count += 1
+        return count > 1
+
     def _visited_ahead(self):
         lookahead = 0.6
         tx = self.x + math.cos(self.yaw) * lookahead
@@ -203,6 +229,16 @@ class SortingNode(Node):
             if cid in self.bin_detections:
                 tt = 2
                 td, is_close, _, _ = self.bin_detections[cid]
+                best_cid = cid
+            elif cid in self.shared_bins:
+                tt = 3
+                gx, gy = self.shared_bins[cid]
+                angle_to_bin = math.atan2(gy - self.y, gx - self.x)
+                angle_diff = norm_angle(angle_to_bin - self.yaw)
+                if angle_diff > 0.3: td = 1
+                elif angle_diff < -0.3: td = 2
+                else: td = 0
+                is_close = False
                 best_cid = cid
                 
         return tt, td, is_close, best_cid
@@ -238,8 +274,51 @@ class SortingNode(Node):
             self.pub_cmd.publish(cmd)
             return
 
+        # Broadcast bins we currently see
+        for cid, (td, is_close, area, dist) in self.bin_detections.items():
+            if dist < 9.0:
+                angle_offset = 0.0
+                if td == 1: angle_offset = 0.4
+                elif td == 2: angle_offset = -0.4
+                bin_x = self.x + dist * math.cos(self.yaw + angle_offset)
+                bin_y = self.y + dist * math.sin(self.yaw + angle_offset)
+                if cid not in self.shared_bins:
+                    self.shared_bins[cid] = (bin_x, bin_y)
+                    msg = String()
+                    msg.data = f"{cid},{bin_x:.2f},{bin_y:.2f}"
+                    self.pub_bin_loc.publish(msg)
+
         tt, td, is_close, cid = self._get_camera_state()
+        wf_raw = self._lidar_wall_front()
         
+        # State transitions
+        if self.nav_mode == "EXPLORE":
+            if now - self.nav_mode_start > 30.0:
+                self.get_logger().info(f"[{self.name}] Finished EXPLORE override. Resuming NORMAL.")
+                self.nav_mode = "NORMAL"
+            else:
+                if tt == 3: tt = 0 # Ignore shared map target during exploration
+                
+        if self.nav_mode == "NORMAL" and tt == 3 and wf_raw > 0:
+            self.get_logger().info(f"[{self.name}] Obstacle blocks shared target. Starting WALL_FOLLOW.")
+            self.nav_mode = "WALL_FOLLOW"
+            self.nav_mode_start = now
+            self.wf_dir = 2 # Initial turn right (wall on left)
+            
+        if self.nav_mode == "WALL_FOLLOW":
+            if tt != 3:
+                self.nav_mode = "NORMAL"
+            elif now - self.nav_mode_start > 15.0:
+                self.get_logger().info(f"[{self.name}] Stuck in Wall Follow. Switching to EXPLORE for 30s.")
+                self.nav_mode = "EXPLORE"
+                self.nav_mode_start = now
+                tt = 0
+            else:
+                side_blocked = self._lidar_wall_side(check_left=(self.wf_dir == 2))
+                if not side_blocked and wf_raw == 0:
+                    self.get_logger().info(f"[{self.name}] Obstacle cleared. Resuming DIRECT to target.")
+                    self.nav_mode = "NORMAL"
+
         # Pickup / Dropoff Trigger
         if is_close:
             colors = {1: 'red', 2: 'green', 3: 'blue'}
@@ -264,7 +343,6 @@ class SortingNode(Node):
                 return
 
         # RL Execution
-        wf_raw = self._lidar_wall_front()
         wf = 1 if wf_raw > 0 else 0
         va = self._visited_ahead()
         
@@ -278,24 +356,43 @@ class SortingNode(Node):
             reason = "Q-table"
         else:
             # Fallback robust rules if RL state not seen
-            if tt > 0: # Camera overrides
+            if tt in [1, 2]: # Camera overrides
                 if td == 1: action = 1; reason = "Camera fallback (turn left)"
                 elif td == 2: action = 2; reason = "Camera fallback (turn right)"
                 else: action = 0; reason = "Camera fallback (forward)"
             elif wf_raw > 0: 
                 action = wf_raw # Obstacle avoidance
                 reason = "Obstacle avoidance (turn " + ("left" if action==1 else "right") + ")"
+            elif tt == 3:
+                if td == 1: action = 1; reason = "Shared map fallback (turn left)"
+                elif td == 2: action = 2; reason = "Shared map fallback (turn right)"
+                else: action = 0; reason = "Shared map fallback (forward)"
             else: 
                 action = 0; reason = "Forward (no obstacle)"
 
         # Enforce camera precedence constraint explicitly to ensure safety
-        if tt > 0:
+        if tt in [1, 2]:
             if td == 1: action = 1; reason = "Camera precedence (turn left)"
             elif td == 2: action = 2; reason = "Camera precedence (turn right)"
             else: action = 0; reason = "Camera precedence (forward)"
+        elif self.nav_mode == "WALL_FOLLOW":
+            if wf_raw > 0:
+                other_blocked = self._lidar_wall_side(check_left=(self.wf_dir != 2))
+                if other_blocked:
+                    self.get_logger().info(f"[{self.name}] Cornered! Reversing wall follow direction.")
+                    self.wf_dir = 1 if self.wf_dir == 2 else 2
+                action = self.wf_dir
+                reason = "Wall Follow (turning " + ("left" if action==1 else "right") + ")"
+            else:
+                action = 0
+                reason = "Wall Follow (forward)"
         elif wf_raw > 0:
             action = wf_raw # Override Q-table to prevent oscillation near walls
             reason = "Obstacle precedence (turn " + ("left" if action==1 else "right") + ")"
+        elif tt == 3:
+            if td == 1: action = 1; reason = "Shared map precedence (turn left)"
+            elif td == 2: action = 2; reason = "Shared map precedence (turn right)"
+            else: action = 0; reason = "Shared map precedence (forward)"
 
         if action in [1, 2]:
             self.last_turn_dir = action
