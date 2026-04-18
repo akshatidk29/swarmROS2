@@ -1,0 +1,9 @@
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/uninstall.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/swarm_description_uninstall.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/test.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/edit_cache.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/rebuild_cache.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/list_install_components.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/install.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/install/local.dir
+/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/install/strip.dir

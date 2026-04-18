@@ -1,0 +1,4 @@
+[console_scripts]
+randomizer_node = swarm_nav.randomizer_node:main
+sorting_node = swarm_nav.sorting_node:main
+
