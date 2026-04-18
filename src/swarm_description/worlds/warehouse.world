@@ -122,7 +122,7 @@
     <!-- Row 1: left side shelves -->
     <model name="shelf_1a">
       <static>true</static>
-      <pose>-2.5 2.0 0.4 0 0 0</pose>
+      <pose>-2.5 2.0 0.4 0 45 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry><box><size>2.0 0.4 0.8</size></box></geometry>
@@ -226,7 +226,7 @@
     <!-- Row 3: right side shelves -->
     <model name="shelf_3a">
       <static>true</static>
-      <pose>3.5 2.0 0.4 0 0 0</pose>
+      <pose>3.5 2.0 0.4 0 0 20</pose>
       <link name="link">
         <collision name="collision">
           <geometry><box><size>1.5 0.4 0.8</size></box></geometry>

@@ -1,0 +1,26 @@
+[0.011s] Invoking command in '/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav:/opt/ros/humble /usr/bin/cmake --build /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description -- -j16 -l16
+[0.183s] Invoked command in '/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav:/opt/ros/humble /usr/bin/cmake --build /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description -- -j16 -l16
+[0.191s] Invoking command in '/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav:/opt/ros/humble /usr/bin/cmake --install /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description
+[0.198s] -- Install configuration: ""
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description//urdf
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description//urdf/swarm_bot.urdf.xacro
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description//launch
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description//launch/multi_robot.launch.py
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description//worlds
+[0.198s] -- Installing: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description//worlds/warehouse.world
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/ament_index/resource_index/package_run_dependencies/swarm_description
+[0.198s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/ament_index/resource_index/parent_prefix_path/swarm_description
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/environment/ament_prefix_path.sh
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/environment/ament_prefix_path.dsv
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/environment/path.sh
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/environment/path.dsv
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/local_setup.bash
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/local_setup.sh
+[0.199s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/local_setup.zsh
+[0.200s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/local_setup.dsv
+[0.201s] -- Installing: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/package.dsv
+[0.201s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/ament_index/resource_index/packages/swarm_description
+[0.201s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/cmake/swarm_descriptionConfig.cmake
+[0.202s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/cmake/swarm_descriptionConfig-version.cmake
+[0.202s] -- Up-to-date: /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_description/share/swarm_description/package.xml
+[0.202s] Invoked command in '/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install/swarm_nav:/opt/ros/humble /usr/bin/cmake --install /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description

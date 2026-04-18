@@ -162,7 +162,7 @@ class SortingNode(Node):
 
     def _status_log(self):
         if self.task_done: return
-        self.get_logger().info(f"[{self.name}] pos=({self.x:.1f},{self.y:.1f}) carry={self.carrying} placed={list(self.global_placed.values())}")
+        self.get_logger().info(f"[{self.name}] pos=({self.x:.1f},{self.y:.1f}) carry={self.carrying} placed={list(self.global_placed.values())} using='{self.last_action_reason}'")
 
     def _delete_obj(self, name):
         req = DeleteEntity.Request()
