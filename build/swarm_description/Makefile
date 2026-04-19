@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/src/swarm_description
+CMAKE_SOURCE_DIR = /home/aman/cs671_7/main/src/swarm_description
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description
+CMAKE_BINARY_DIR = /home/aman/cs671_7/main/build/swarm_description
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -142,9 +142,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aman/cs671_7/main/build/swarm_description/CMakeFiles /home/aman/cs671_7/main/build/swarm_description//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aman/cs671_7/main/build/swarm_description/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

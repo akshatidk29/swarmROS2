@@ -7,7 +7,7 @@
 # since a plain shell script can't determine its own path when being sourced
 # either use the provided COLCON_CURRENT_PREFIX
 # or fall back to the build time prefix (if it exists)
-_colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/install
+_colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/home/aman/cs671_7/main/install
 if [ ! -z "$COLCON_CURRENT_PREFIX" ]; then
   _colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX="$COLCON_CURRENT_PREFIX"
 elif [ ! -d "$_colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX" ]; then

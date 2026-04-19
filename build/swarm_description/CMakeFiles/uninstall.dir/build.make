@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/src/swarm_description
+CMAKE_SOURCE_DIR = /home/aman/cs671_7/main/src/swarm_description
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description
+CMAKE_BINARY_DIR = /home/aman/cs671_7/main/build/swarm_description
 
 # Utility rule file for uninstall.
 
@@ -78,6 +78,6 @@ CMakeFiles/uninstall.dir/clean:
 .PHONY : CMakeFiles/uninstall.dir/clean
 
 CMakeFiles/uninstall.dir/depend:
-	cd /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/src/swarm_description /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/src/swarm_description /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description /home/silver/Desktop/silver_quick/cs671_2026_hack/swarm_ws/build/swarm_description/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/aman/cs671_7/main/build/swarm_description && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/aman/cs671_7/main/src/swarm_description /home/aman/cs671_7/main/src/swarm_description /home/aman/cs671_7/main/build/swarm_description /home/aman/cs671_7/main/build/swarm_description /home/aman/cs671_7/main/build/swarm_description/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/uninstall.dir/depend
 

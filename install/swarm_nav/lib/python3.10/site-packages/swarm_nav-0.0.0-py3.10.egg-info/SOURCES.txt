@@ -17,6 +17,7 @@ swarm_nav/randomizer_node.py
 swarm_nav/rl_env.py
 swarm_nav/sorting_node.py
 swarm_nav/train_rl.py
+swarm_nav/visualization_node.py
 test/test_copyright.py
 test/test_flake8.py
 test/test_pep257.py

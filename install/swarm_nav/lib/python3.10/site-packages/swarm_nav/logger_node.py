@@ -22,13 +22,11 @@ class LoggerNode(Node):
             "end_time": 0.0,
             "total_time": 0.0,
             "trajectories": {"robot_1": [], "robot_2": [], "robot_3": []}, # list of [time, x, y]
-            "obstacles": [], # list of [time, x, y, distance]
             "events": [], # list of {type, time, robot, color, x, y}
             "visited": [] # list of [time, x, y]
         }
         
         self.poses = {}
-        self.last_obstacle_log_time = 0.0
         
         qos = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT, durability=DurabilityPolicy.VOLATILE)
         
@@ -63,7 +61,6 @@ class LoggerNode(Node):
         if bot not in self.poses: return
         rx, ry, ryaw = self.poses[bot]
         
-        obstacles_this_scan = []
         # Chassis dimensions (0.3m x 0.2m)
         half_l = 0.151 # Small buffer to avoid self-hits
         half_w = 0.101
@@ -86,20 +83,6 @@ class LoggerNode(Node):
             
             # Skip if distance is within robot's own footprint (+ small margin)
             if d < (r_self + 0.01): continue
-            
-            # Log obstacles for proximity map (anything within 1m but not self)
-            if d < 1.0 and (now - self.last_obstacle_log_time > 1.0):
-                angle_to_world = ryaw + a
-                gx = rx + d * math.cos(angle_to_world)
-                gy = ry + d * math.sin(angle_to_world)
-                gap = d - r_self
-                obstacles_this_scan.append([round(now, 2), round(gx, 2), round(gy, 2), round(gap, 3)])
-                
-        if obstacles_this_scan:
-            # Sort by gap and take the 10 closest points
-            obstacles_this_scan.sort(key=lambda x: x[3])
-            self.log_data["obstacles"].extend(obstacles_this_scan[:10])
-            self.last_obstacle_log_time = now
 
     def _cb_visited(self, msg):
         now = self.get_clock().now().nanoseconds / 1e9 - self.start_time
