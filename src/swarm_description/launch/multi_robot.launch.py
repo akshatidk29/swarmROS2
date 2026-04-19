@@ -49,6 +49,7 @@ def generate_launch_description():
             parameters=[{
                 'robot_description': robot_description,
                 'frame_prefix': ns + '/',
+                'use_sim_time': True
             }],
         )
 
@@ -84,7 +85,7 @@ def generate_launch_description():
                     namespace=ns,
                     name='sorting_node',
                     output='screen',
-                    parameters=[{'robot_name': ns}]
+                    parameters=[{'robot_name': ns, 'use_sim_time': True}]
                 )
             ]
         )
@@ -92,6 +93,21 @@ def generate_launch_description():
         ld.add_action(robot_state_pub)
         ld.add_action(spawn_robot)
         ld.add_action(sorting_node)
+
+        # Static TF from map to odom for each robot so RViz can visualize them together
+        static_tf = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name=f'static_tf_map_to_{ns}_odom',
+            arguments=[
+                robot['x'], robot['y'], '0',  # Translation
+                robot['yaw'], '0', '0',       # Rotation (yaw, pitch, roll)
+                'map',                        # Parent frame
+                f'{ns}/odom'                  # Child frame
+            ],
+            parameters=[{'use_sim_time': True}]
+        )
+        ld.add_action(static_tf)
 
     # Global Randomizer Node
     randomizer_node = TimerAction(
@@ -101,7 +117,8 @@ def generate_launch_description():
                 package='swarm_nav',
                 executable='randomizer_node',
                 name='randomizer_node',
-                output='screen'
+                output='screen',
+                parameters=[{'use_sim_time': True}]
             )
         ]
     )
@@ -115,7 +132,8 @@ def generate_launch_description():
                 package='swarm_nav',
                 executable='logger_node',
                 name='logger_node',
-                output='screen'
+                output='screen',
+                parameters=[{'use_sim_time': True}]
             )
         ]
     )
