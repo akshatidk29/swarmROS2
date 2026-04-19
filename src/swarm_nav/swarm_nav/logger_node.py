@@ -154,7 +154,8 @@ def main(args=None):
     finally:
         node.save_log()
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

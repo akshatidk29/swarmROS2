@@ -1,64 +1,51 @@
 #!/usr/bin/env python3
 import os
-import pickle
-import random
 import numpy as np
-from rl_env import RLSensorEnv, NUM_ROBOTS, NUM_ACTIONS
+from stable_baselines3 import PPO
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.callbacks import BaseCallback
+from rl_env import RLSensorEnv
 
-EPISODES = 50000
-ALPHA = 0.1
-GAMMA = 0.95
-EPSILON_START = 1.0
-EPSILON_END = 0.05
-DECAY = 0.9999
+class RewardCallback(BaseCallback):
+    def __init__(self, verbose=0):
+        super(RewardCallback, self).__init__(verbose)
+        self.episode_count = 0
+        self.rewards = []
+        
+    def _on_step(self) -> bool:
+        if "dones" in self.locals:
+            for idx, done in enumerate(self.locals["dones"]):
+                if done:
+                    info = self.locals["infos"][idx]
+                    if "episode" in info:
+                        self.rewards.append(info["episode"]["r"])
+                        self.episode_count += 1
+                        
+                        if self.episode_count % 1000 == 0:
+                            avg_reward = np.mean(self.rewards[-1000:])
+                            print(f"--- Episode {self.episode_count} ---")
+                            print(f"Average Reward (last 1000 episodes): {avg_reward:.2f}")
+        return True
 
 def main():
-    env = RLSensorEnv()
-    q_table = {}
+    print("Initializing RL Sensor Environment...")
+    # Wrap the environment so it can be used by Stable Baselines3
+    # Use Monitor to automatically add 'episode' info dict for the callback
+    from stable_baselines3.common.monitor import Monitor
+    env = make_vec_env(lambda: Monitor(RLSensorEnv()), n_envs=4)
 
-    def get_q(s):
-        if s not in q_table:
-            q_table[s] = np.zeros(NUM_ACTIONS)
-        return q_table[s]
-
-    epsilon = EPSILON_START
+    print("Creating PPO Agent...")
+    model = PPO("MlpPolicy", env, verbose=0, learning_rate=0.001, n_steps=2048, batch_size=64)
     
-    print("Training RL Sensor Policy...")
-    for ep in range(EPISODES):
-        env.reset()
-        done = False
-        states = env.get_state_keys()
-        
-        while not done:
-            actions = []
-            for s in states:
-                if random.random() < epsilon:
-                    actions.append(random.randint(0, NUM_ACTIONS - 1))
-                else:
-                    actions.append(int(np.argmax(get_q(s))))
-                    
-            rewards, done = env.step(states, actions)
-            next_states = env.get_state_keys()
-            
-            for i in range(NUM_ROBOTS):
-                s = states[i]
-                a = actions[i]
-                ns = next_states[i]
-                old = get_q(s)[a]
-                nxt = np.max(get_q(ns))
-                get_q(s)[a] = old + ALPHA * (rewards[i] + GAMMA * nxt - old)
-                
-            states = next_states
-            
-        epsilon = max(EPSILON_END, epsilon * DECAY)
-        if (ep + 1) % 10000 == 0:
-            print(f"Episode {ep+1}, Epsilon: {epsilon:.3f}, States: {len(q_table)}")
+    print("Training PPO Agent for 5,000,000 timesteps...")
+    callback = RewardCallback()
+    model.learn(total_timesteps=100000, callback=callback)
 
+    # Save the trained model
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    q_path = os.path.join(base_dir, 'q_table.pkl')
-    with open(q_path, 'wb') as f:
-        pickle.dump(dict(q_table), f)
-    print(f"Saved Q-table to {q_path}")
+    model_path = os.path.join(base_dir, 'ppo_nav_model.zip')
+    model.save(model_path)
+    print(f"Saved PPO model to {model_path}")
 
 if __name__ == '__main__':
     main()

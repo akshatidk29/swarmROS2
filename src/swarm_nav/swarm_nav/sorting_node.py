@@ -29,15 +29,18 @@ class SortingNode(Node):
         self.priority = int(self.name.split('_')[-1]) if '_' in self.name else 99
         self.other_robots = {}
 
-        # --- Q-Table Load ---
-        self.q_table = {}
-        q_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'q_table.pkl')
-        if False: # os.path.exists(q_path):
-            with open(q_path, 'rb') as f:
-                self.q_table = pickle.load(f)
-            self.get_logger().info(f"[{self.name}] Loaded Q-table with {len(self.q_table)} states.")
+        # --- PPO Model Load ---
+        self.ppo_model = None
+        ppo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ppo_nav_model.zip')
+        if os.path.exists(ppo_path):
+            try:
+                from stable_baselines3 import PPO
+                self.ppo_model = PPO.load(ppo_path)
+                self.get_logger().info(f"[{self.name}] Loaded PPO navigation model.")
+            except Exception as e:
+                self.get_logger().error(f"[{self.name}] Failed to load PPO model: {e}")
         else:
-            self.get_logger().error(f"[{self.name}] Q-table not found at {q_path}!")
+            self.get_logger().info(f"[{self.name}] PPO model not found at {ppo_path}, using hardcoded fallbacks.")
 
         # --- Subsystems ---
         self.camera = CameraProcessor(self.get_logger().info)
@@ -368,55 +371,56 @@ class SortingNode(Node):
 
         # RL Execution
         wf = 1 if wf_raw > 0 else 0
+        wl = 1 if self._lidar_wall_side(check_left=True) else 0
+        wr = 1 if self._lidar_wall_side(check_left=False) else 0
         va = self._visited_ahead()
         
-        state = (self.carrying, tt, td, wf, va)
         action = 0 # 0=FWD, 1=LEFT, 2=RIGHT
         reason = ""
+        use_fallback = True
         
-        if state in self.q_table:
+        if self.ppo_model is not None:
             import numpy as np
-            action = int(np.argmax(self.q_table[state]))
-            reason = "Q-table"
-        else:
-            # Fallback robust rules if RL state not seen
-            if tt in [1, 2]: # Camera overrides
-                if td == 1: action = 1; reason = "Camera fallback (turn left)"
-                elif td == 2: action = 2; reason = "Camera fallback (turn right)"
-                else: action = 0; reason = "Camera fallback (forward)"
+            state_array = np.array([self.carrying, tt, td, wf, wl, wr, va, self.last_action])
+            try:
+                action_pred, _ = self.ppo_model.predict(state_array, deterministic=True)
+                action = int(action_pred)
+                reason = "PPO Model"
+                use_fallback = False
+            except Exception as e:
+                self.get_logger().error(f"[{self.name}] PPO prediction failed: {e}. Using fallback.")
+                use_fallback = True
+                
+        # Classical Overrides alongside PPO
+        if tt in [1, 2]: # Classical camera override
+            if td == 1: action = 1; reason = "Camera override (turn left)"
+            elif td == 2: action = 2; reason = "Camera override (turn right)"
+            else: action = 0; reason = "Camera override (forward)"
+            use_fallback = False # Successfully applied override
+        elif tt == 3 and wf_raw == 0: # Shared destination shortest path (if clear)
+            if td == 1: action = 1; reason = "Shared map override (turn left)"
+            elif td == 2: action = 2; reason = "Shared map override (turn right)"
+            else: action = 0; reason = "Shared map override (forward)"
+            use_fallback = False # Successfully applied override
+
+        if use_fallback:
+            # Fallback robust rules if RL fails
+            if self.nav_mode == "WALL_FOLLOW":
+                if wf_raw > 0:
+                    other_blocked = self._lidar_wall_side(check_left=(self.wf_dir != 2))
+                    if other_blocked:
+                        self.get_logger().info(f"[{self.name}] Cornered! Reversing wall follow direction.")
+                        self.wf_dir = 1 if self.wf_dir == 2 else 2
+                    action = self.wf_dir
+                    reason = "Wall Follow (turning " + ("left" if action==1 else "right") + ")"
+                else:
+                    action = 0
+                    reason = "Wall Follow (forward)"
             elif wf_raw > 0: 
                 action = wf_raw # Obstacle avoidance
-                reason = "Obstacle avoidance (turn " + ("left" if action==1 else "right") + ")"
-            elif tt == 3:
-                if td == 1: action = 1; reason = "Shared map fallback (turn left)"
-                elif td == 2: action = 2; reason = "Shared map fallback (turn right)"
-                else: action = 0; reason = "Shared map fallback (forward)"
+                reason = "Obstacle fallback (turn " + ("left" if action==1 else "right") + ")"
             else: 
                 action = 0; reason = "Forward (no obstacle)"
-
-        # Enforce camera precedence constraint explicitly to ensure safety
-        if tt in [1, 2]:
-            if td == 1: action = 1; reason = "Camera precedence (turn left)"
-            elif td == 2: action = 2; reason = "Camera precedence (turn right)"
-            else: action = 0; reason = "Camera precedence (forward)"
-        elif self.nav_mode == "WALL_FOLLOW":
-            if wf_raw > 0:
-                other_blocked = self._lidar_wall_side(check_left=(self.wf_dir != 2))
-                if other_blocked:
-                    self.get_logger().info(f"[{self.name}] Cornered! Reversing wall follow direction.")
-                    self.wf_dir = 1 if self.wf_dir == 2 else 2
-                action = self.wf_dir
-                reason = "Wall Follow (turning " + ("left" if action==1 else "right") + ")"
-            else:
-                action = 0
-                reason = "Wall Follow (forward)"
-        elif wf_raw > 0:
-            action = wf_raw # Override Q-table to prevent oscillation near walls
-            reason = "Obstacle precedence (turn " + ("left" if action==1 else "right") + ")"
-        elif tt == 3:
-            if td == 1: action = 1; reason = "Shared map precedence (turn left)"
-            elif td == 2: action = 2; reason = "Shared map precedence (turn right)"
-            else: action = 0; reason = "Shared map precedence (forward)"
 
         if action in [1, 2]:
             self.last_turn_dir = action

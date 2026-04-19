@@ -7,7 +7,7 @@ setup(
     version='0.0.0',
     packages=find_packages(exclude=['test']),
     package_data={
-        'swarm_nav': ['q_table.pkl'],
+        'swarm_nav': ['ppo_nav_model.zip'],
     },
     data_files=[
         ('share/ament_index/resource_index/packages',

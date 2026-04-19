@@ -24,7 +24,9 @@ def generate_launch_description():
 
     # ======================== GAZEBO SERVER + CLIENT ========================
     gazebo_server = ExecuteProcess(
-        cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so', world_file],
+        cmd=['gazebo', '--verbose',
+             '-s', 'libgazebo_ros_factory.so',
+             world_file],
         output='screen',
     )
     ld.add_action(gazebo_server)
@@ -53,9 +55,9 @@ def generate_launch_description():
             }],
         )
 
-        # Spawn entity in Gazebo (stagger spawn by 2 seconds each)
+        # Spawn entity in Gazebo (stagger spawn by 5 seconds each for reliability)
         spawn_robot = TimerAction(
-            period=float(i * 3),  # stagger spawns to avoid race conditions
+            period=float(i * 5 + 3),  # 3s, 8s, 13s — give Gazebo time to start
             actions=[
                 Node(
                     package='gazebo_ros',
@@ -75,9 +77,9 @@ def generate_launch_description():
             ]
         )
 
-        # RL Sorting Node
+        # RL Sorting Node (start after robot spawn completes)
         sorting_node = TimerAction(
-            period=float(i * 3 + 2),
+            period=float(i * 5 + 6),  # 6s, 11s, 16s — 3s after each spawn
             actions=[
                 Node(
                     package='swarm_nav',
@@ -109,9 +111,9 @@ def generate_launch_description():
         )
         ld.add_action(static_tf)
 
-    # Global Randomizer Node
+    # Global Randomizer Node — start after all robots are spawned (18s)
     randomizer_node = TimerAction(
-        period=1.0,
+        period=18.0,
         actions=[
             Node(
                 package='swarm_nav',
