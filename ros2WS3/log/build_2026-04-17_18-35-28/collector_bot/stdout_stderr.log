@@ -1,0 +1,42 @@
+running develop
+Removing /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector-bot.egg-link (link to .)
+running egg_info
+writing ../../build/collector_bot/collector_bot.egg-info/PKG-INFO
+writing dependency_links to ../../build/collector_bot/collector_bot.egg-info/dependency_links.txt
+writing entry points to ../../build/collector_bot/collector_bot.egg-info/entry_points.txt
+writing requirements to ../../build/collector_bot/collector_bot.egg-info/requires.txt
+writing top-level names to ../../build/collector_bot/collector_bot.egg-info/top_level.txt
+reading manifest file '../../build/collector_bot/collector_bot.egg-info/SOURCES.txt'
+writing manifest file '../../build/collector_bot/collector_bot.egg-info/SOURCES.txt'
+running build
+running build_py
+copying collector_bot/gazebo_interface.py -> /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot
+running install
+running install_lib
+creating /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/navigator.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/explorer.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/__init__.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/gazebo_interface.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/avoidance.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/detector.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+copying /home/akshatidk29/Desktop/rosWS3/build/collector_bot/build/lib/collector_bot/brain.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/navigator.py to navigator.cpython-310.pyc
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/explorer.py to explorer.cpython-310.pyc
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/gazebo_interface.py to gazebo_interface.cpython-310.pyc
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/avoidance.py to avoidance.cpython-310.pyc
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/detector.py to detector.cpython-310.pyc
+byte-compiling /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot/brain.py to brain.cpython-310.pyc
+running install_data
+copying resource/collector_bot -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/share/ament_index/resource_index/packages
+copying package.xml -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/share/collector_bot
+copying launch/simulation.launch.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/share/collector_bot/launch
+copying launch/spawn_robot.launch.py -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/share/collector_bot/launch
+copying urdf/robot.urdf.xacro -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/share/collector_bot/urdf
+copying worlds/arena.world -> /home/akshatidk29/Desktop/rosWS3/install/collector_bot/share/collector_bot/worlds
+running install_egg_info
+Copying ../../build/collector_bot/collector_bot.egg-info to /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/python3.10/site-packages/collector_bot-0.2.0-py3.10.egg-info
+running install_scripts
+Installing brain script to /home/akshatidk29/Desktop/rosWS3/install/collector_bot/lib/collector_bot
+writing list of installed files to '/home/akshatidk29/Desktop/rosWS3/build/collector_bot/install.log'

@@ -1,0 +1,37 @@
+[0.292s] Invoking command in '/home/akshatidk29/Desktop/ros2WS1/src/bot': PYTHONPATH=/home/akshatidk29/Desktop/ros2WS1/build/bot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/bot build --build-base /home/akshatidk29/Desktop/ros2WS1/build/bot/build install --record /home/akshatidk29/Desktop/ros2WS1/build/bot/install.log --single-version-externally-managed install_data
+[0.397s] running egg_info
+[0.397s] creating ../../build/bot/bot.egg-info
+[0.397s] writing ../../build/bot/bot.egg-info/PKG-INFO
+[0.397s] writing dependency_links to ../../build/bot/bot.egg-info/dependency_links.txt
+[0.397s] writing entry points to ../../build/bot/bot.egg-info/entry_points.txt
+[0.398s] writing requirements to ../../build/bot/bot.egg-info/requires.txt
+[0.398s] writing top-level names to ../../build/bot/bot.egg-info/top_level.txt
+[0.398s] writing manifest file '../../build/bot/bot.egg-info/SOURCES.txt'
+[0.398s] reading manifest file '../../build/bot/bot.egg-info/SOURCES.txt'
+[0.399s] writing manifest file '../../build/bot/bot.egg-info/SOURCES.txt'
+[0.399s] running build
+[0.399s] running build_py
+[0.399s] creating /home/akshatidk29/Desktop/ros2WS1/build/bot/build
+[0.399s] creating /home/akshatidk29/Desktop/ros2WS1/build/bot/build/lib
+[0.399s] creating /home/akshatidk29/Desktop/ros2WS1/build/bot/build/lib/bot
+[0.399s] copying bot/avoid.py -> /home/akshatidk29/Desktop/ros2WS1/build/bot/build/lib/bot
+[0.399s] copying bot/__init__.py -> /home/akshatidk29/Desktop/ros2WS1/build/bot/build/lib/bot
+[0.400s] running install
+[0.400s] running install_lib
+[0.400s] creating /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot
+[0.400s] copying /home/akshatidk29/Desktop/ros2WS1/build/bot/build/lib/bot/avoid.py -> /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot
+[0.400s] copying /home/akshatidk29/Desktop/ros2WS1/build/bot/build/lib/bot/__init__.py -> /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot
+[0.400s] byte-compiling /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot/avoid.py to avoid.cpython-310.pyc
+[0.400s] byte-compiling /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot/__init__.py to __init__.cpython-310.pyc
+[0.400s] running install_data
+[0.401s] creating /home/akshatidk29/Desktop/ros2WS1/install/bot/share/ament_index
+[0.401s] creating /home/akshatidk29/Desktop/ros2WS1/install/bot/share/ament_index/resource_index
+[0.401s] creating /home/akshatidk29/Desktop/ros2WS1/install/bot/share/ament_index/resource_index/packages
+[0.401s] copying resource/bot -> /home/akshatidk29/Desktop/ros2WS1/install/bot/share/ament_index/resource_index/packages
+[0.401s] copying package.xml -> /home/akshatidk29/Desktop/ros2WS1/install/bot/share/bot
+[0.401s] running install_egg_info
+[0.401s] Copying ../../build/bot/bot.egg-info to /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages/bot-0.0.0-py3.10.egg-info
+[0.402s] running install_scripts
+[0.417s] Installing avoid script to /home/akshatidk29/Desktop/ros2WS1/install/bot/lib/bot
+[0.417s] writing list of installed files to '/home/akshatidk29/Desktop/ros2WS1/build/bot/install.log'
+[0.434s] Invoked command in '/home/akshatidk29/Desktop/ros2WS1/src/bot' returned '0': PYTHONPATH=/home/akshatidk29/Desktop/ros2WS1/build/bot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/akshatidk29/Desktop/ros2WS1/install/bot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/bot build --build-base /home/akshatidk29/Desktop/ros2WS1/build/bot/build install --record /home/akshatidk29/Desktop/ros2WS1/build/bot/install.log --single-version-externally-managed install_data

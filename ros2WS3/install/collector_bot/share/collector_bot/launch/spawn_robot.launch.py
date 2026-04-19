@@ -1,0 +1,1 @@
+/home/akshatidk29/Desktop/rosWS3/build/collector_bot/launch/spawn_robot.launch.py
