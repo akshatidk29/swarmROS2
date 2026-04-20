@@ -1,0 +1,33 @@
+{
+  "duration_s": 99.6,
+  "objects_picked_up": 0,
+  "objects_delivered": 0,
+  "completion_ratio": 0.0,
+  "collisions": {
+    "robot_1": 1952,
+    "robot_2": 787,
+    "robot_3": 900,
+    "robot_4": 75
+  },
+  "total_collisions": 3714,
+  "broadcast_events": 395,
+  "per_robot": {
+    "robot_1": {
+      "distance_m": 240.6,
+      "collisions": 1952
+    },
+    "robot_2": {
+      "distance_m": 461.1,
+      "collisions": 787
+    },
+    "robot_3": {
+      "distance_m": 241.4,
+      "collisions": 900
+    },
+    "robot_4": {
+      "distance_m": 10.1,
+      "collisions": 75
+    }
+  },
+  "timestamp": "2026-04-19T04:14:19.395761"
+}
