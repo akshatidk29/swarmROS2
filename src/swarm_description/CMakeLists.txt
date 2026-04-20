@@ -3,7 +3,6 @@ project(swarm_description)
 
 find_package(ament_cmake REQUIRED)
 
-# Install URDF, meshes, config, launch, worlds directories
 install(DIRECTORY
   urdf
   launch

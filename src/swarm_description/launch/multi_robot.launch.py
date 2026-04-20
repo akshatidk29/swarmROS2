@@ -13,7 +13,6 @@ def generate_launch_description():
     urdf_file = os.path.join(pkg_dir, 'urdf', 'swarm_bot.urdf.xacro')
     world_file = os.path.join(pkg_dir, 'worlds', 'warehouse.world')
 
-    # Robot spawn positions (x, y, yaw)
     robots = [
         {'name': 'robot_1', 'x': '-4.0', 'y': '3.0', 'yaw': '0.0'},
         {'name': 'robot_2', 'x': '-4.0', 'y': '1.0', 'yaw': '0.0'},
@@ -22,7 +21,6 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    # ======================== GAZEBO SERVER + CLIENT ========================
     gazebo_server = ExecuteProcess(
         cmd=['gazebo', '--verbose',
              '-s', 'libgazebo_ros_factory.so',
@@ -31,17 +29,14 @@ def generate_launch_description():
     )
     ld.add_action(gazebo_server)
 
-    # ======================== SPAWN EACH ROBOT ========================
     for i, robot in enumerate(robots):
         ns = robot['name']
 
-        # Process xacro with namespace argument
         robot_description = xacro.process_file(
             urdf_file,
             mappings={'robot_ns': ns}
         ).toxml()
 
-        # Robot state publisher (publishes TF for this robot)
         robot_state_pub = Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
@@ -55,9 +50,8 @@ def generate_launch_description():
             }],
         )
 
-        # Spawn entity in Gazebo (stagger spawn by 5 seconds each for reliability)
         spawn_robot = TimerAction(
-            period=float(i * 5 + 3),  # 3s, 8s, 13s — give Gazebo time to start
+            period=float(i * 5 + 3),
             actions=[
                 Node(
                     package='gazebo_ros',
@@ -77,9 +71,8 @@ def generate_launch_description():
             ]
         )
 
-        # RL Sorting Node (start after robot spawn completes)
         sorting_node = TimerAction(
-            period=float(i * 5 + 6),  # 6s, 11s, 16s — 3s after each spawn
+            period=float(i * 5 + 6),
             actions=[
                 Node(
                     package='swarm_nav',
@@ -96,22 +89,20 @@ def generate_launch_description():
         ld.add_action(spawn_robot)
         ld.add_action(sorting_node)
 
-        # Static TF from map to odom for each robot so RViz can visualize them together
         static_tf = Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name=f'static_tf_map_to_{ns}_odom',
             arguments=[
-                robot['x'], robot['y'], '0',  # Translation
-                robot['yaw'], '0', '0',       # Rotation (yaw, pitch, roll)
-                'map',                        # Parent frame
-                f'{ns}/odom'                  # Child frame
+                robot['x'], robot['y'], '0',
+                robot['yaw'], '0', '0',
+                'map',
+                f'{ns}/odom'
             ],
             parameters=[{'use_sim_time': True}]
         )
         ld.add_action(static_tf)
 
-    # Global Randomizer Node — start after all robots are spawned (18s)
     randomizer_node = TimerAction(
         period=18.0,
         actions=[
@@ -126,7 +117,6 @@ def generate_launch_description():
     )
     ld.add_action(randomizer_node)
 
-    # Global Logger Node
     logger_node = TimerAction(
         period=2.0,
         actions=[

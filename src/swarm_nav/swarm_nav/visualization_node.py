@@ -8,18 +8,14 @@ class VisualizationNode(Node):
     def __init__(self):
         super().__init__('visualization_node')
         
-        # State
         self.visited_grid = set()
-        self.bins = {}  # {cid: (x, y)}
+        self.bins = {}
         
-        # Subscriptions
         self.create_subscription(String, '/swarm/visited', self._cb_visited, 10)
         self.create_subscription(String, '/swarm/bin_locations', self._cb_bin_loc, 10)
         
-        # Publisher
         self.marker_pub = self.create_publisher(MarkerArray, '/swarm/visualization', 10)
         
-        # Timer
         self.create_timer(1.0, self._publish_markers)
         self.get_logger().info('Swarm Visualization Node started.')
 
@@ -45,7 +41,6 @@ class VisualizationNode(Node):
     def _publish_markers(self):
         marker_array = MarkerArray()
         
-        # 1. Visited Grid (CUBE_LIST)
         grid_marker = Marker()
         grid_marker.header.frame_id = "map"
         grid_marker.header.stamp = self.get_clock().now().to_msg()
@@ -57,7 +52,6 @@ class VisualizationNode(Node):
         grid_marker.scale.x = 0.5
         grid_marker.scale.y = 0.5
         grid_marker.scale.z = 0.05
-        # Light green, transparent
         grid_marker.color.r = 0.2
         grid_marker.color.g = 0.8
         grid_marker.color.b = 0.2
@@ -74,11 +68,10 @@ class VisualizationNode(Node):
         if len(grid_marker.points) > 0:
             marker_array.markers.append(grid_marker)
 
-        # 2. Shared Bins
         colors = {
-            1: (1.0, 0.2, 0.2),  # Red
-            2: (0.2, 0.9, 0.2),  # Green
-            3: (0.2, 0.2, 1.0)   # Blue
+            1: (1.0, 0.2, 0.2),
+            2: (0.2, 0.9, 0.2),
+            3: (0.2, 0.2, 1.0)
         }
         
         for cid, (x, y) in self.bins.items():

@@ -7,13 +7,11 @@ class CameraProcessor:
         self._log = logger
         self.bridge = CvBridge()
         
-        # HSV ranges for RED, GREEN, BLUE objects and bins
-        # We will use simple colors since Gazebo lighting can vary.
         self.color_ranges = {
             1: [(np.array([0, 50, 50]), np.array([10, 255, 255])),
-                (np.array([170, 50, 50]), np.array([180, 255, 255]))], # RED
-            2: [(np.array([40, 50, 50]), np.array([80, 255, 255]))],  # GREEN
-            3: [(np.array([100, 50, 50]), np.array([140, 255, 255]))] # BLUE
+                (np.array([170, 50, 50]), np.array([180, 255, 255]))],
+            2: [(np.array([40, 50, 50]), np.array([80, 255, 255]))],
+            3: [(np.array([100, 50, 50]), np.array([140, 255, 255]))]
         }
 
     def process_image(self, msg, depth_msg=None):
@@ -21,7 +19,6 @@ class CameraProcessor:
             cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
             hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
             
-            # Using depth image if provided
             depth_image = None
             if depth_msg:
                 depth_image = self.bridge.imgmsg_to_cv2(depth_msg, "32FC1")

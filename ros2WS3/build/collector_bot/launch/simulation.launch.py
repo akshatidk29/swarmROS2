@@ -1,1 +1,0 @@
-/home/akshatidk29/Desktop/rosWS3/src/collector_bot/launch/simulation.launch.py

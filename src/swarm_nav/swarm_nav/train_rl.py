@@ -29,8 +29,6 @@ class RewardCallback(BaseCallback):
 
 def main():
     print("Initializing RL Sensor Environment...")
-    # Wrap the environment so it can be used by Stable Baselines3
-    # Use Monitor to automatically add 'episode' info dict for the callback
     from stable_baselines3.common.monitor import Monitor
     env = make_vec_env(lambda: Monitor(RLSensorEnv()), n_envs=4)
 
@@ -41,7 +39,6 @@ def main():
     callback = RewardCallback()
     model.learn(total_timesteps=100000, callback=callback)
 
-    # Save the trained model
     base_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(base_dir, 'ppo_nav_model.zip')
     model.save(model_path)

@@ -29,7 +29,6 @@ class SortingNode(Node):
         self.priority = int(self.name.split('_')[-1]) if '_' in self.name else 99
         self.other_robots = {}
 
-        # --- PPO Model Load ---
         self.ppo_model = None
         ppo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ppo_nav_model.zip')
         if os.path.exists(ppo_path):
@@ -42,12 +41,10 @@ class SortingNode(Node):
         else:
             self.get_logger().info(f"[{self.name}] PPO model not found at {ppo_path}, using hardcoded fallbacks.")
 
-        # --- Subsystems ---
         self.camera = CameraProcessor(self.get_logger().info)
         self.obj_detections = {}
         self.bin_detections = {}
 
-        # --- State ---
         self.x = 0.0
         self.y = 0.0
         self.yaw = 0.0
@@ -56,12 +53,10 @@ class SortingNode(Node):
         self.last_scan = None
         self.task_done = False
         
-        # Shared Map
         self.visited_grid = set()
         self.global_placed = {'red': False, 'green': False, 'blue': False}
         self.global_picked = {'red': False, 'green': False, 'blue': False}
 
-        # Dwell State
         self.dwell_active = False
         self.dwell_start_time = 0.0
 
@@ -73,14 +68,12 @@ class SortingNode(Node):
         self.last_action = 0
         self.last_action_reason = ""
 
-        # ROS Setup
         qos = QoSProfile(depth=5, reliability=ReliabilityPolicy.BEST_EFFORT, durability=DurabilityPolicy.VOLATILE)
         self.create_subscription(LaserScan, 'scan', self._cb_scan, qos)
         self.create_subscription(Odometry, 'odom', self._cb_odom, qos)
         self.create_subscription(Image, 'camera/image_raw', self._cb_cam, qos)
         self.create_subscription(Image, 'camera/depth/image_raw', self._cb_depth, qos)
         
-        # Shared communication
         self.create_subscription(String, '/swarm/visited', self._cb_visited, 10)
         self.create_subscription(String, '/swarm/placed', self._cb_placed, 10)
         self.create_subscription(String, '/swarm/picked', self._cb_picked, 10)
@@ -100,7 +93,6 @@ class SortingNode(Node):
         self.create_subscription(PoseStamped, '/swarm/poses', self._cb_swarm, 10)
         self.pub_pose = self.create_publisher(PoseStamped, '/swarm/poses', 10)
 
-        # Service clients
         self.delete_cli = self.create_client(DeleteEntity, '/delete_entity')
         
         self.last_depth_msg = None
@@ -157,7 +149,7 @@ class SortingNode(Node):
 
     def _cb_obj_loc(self, msg):
         parts = msg.data.split(',')
-        if len(parts) == 4: # cid, x, y, robot_name
+        if len(parts) == 4:
             cid = int(parts[0])
             if cid not in self.shared_objs:
                 self.shared_objs[cid] = (float(parts[1]), float(parts[2]), parts[3])
@@ -221,7 +213,6 @@ class SortingNode(Node):
         return 1 if (gx, gy) in self.visited_grid else 0
 
     def _get_camera_state(self):
-        # target_type: 0=none, 1=want_obj, 2=want_bin
         tt = 0; td = 0; is_close = False; best_cid = 0
         
         colors = {1: 'red', 2: 'green', 3: 'blue'}
@@ -268,7 +259,6 @@ class SortingNode(Node):
             self.pub_cmd.publish(cmd)
             return
 
-        # DWELL Logic
         if self.dwell_active:
             now = self.get_clock().now().nanoseconds / 1e9
             if now - self.dwell_start_time >= 5.0:
@@ -276,7 +266,6 @@ class SortingNode(Node):
                 color_name = colors[self.carrying]
                 self.get_logger().info(f"[{self.name}] Dropped {color_name} object into bin.")
                 
-                # Signal global placed
                 msg = String()
                 msg.data = f"{color_name},{self.name},{self.x:.2f},{self.y:.2f}"
                 self.pub_placed.publish(msg)
@@ -287,7 +276,6 @@ class SortingNode(Node):
             self.pub_cmd.publish(cmd)
             return
 
-        # Broadcast bins we currently see
         for cid, (td, is_close, area, dist) in self.bin_detections.items():
             if dist < 9.0:
                 angle_offset = 0.0
@@ -301,7 +289,6 @@ class SortingNode(Node):
                     msg.data = f"{cid},{bin_x:.2f},{bin_y:.2f}"
                     self.pub_bin_loc.publish(msg)
 
-        # Broadcast objects we currently see
         for cid, (td, is_close, area, dist) in self.obj_detections.items():
             if dist < 8.0:
                 angle_offset = 0.0
@@ -318,19 +305,18 @@ class SortingNode(Node):
         tt, td, is_close, cid = self._get_camera_state()
         wf_raw = self._lidar_wall_front()
         
-        # State transitions
         if self.nav_mode == "EXPLORE":
             if now - self.nav_mode_start > 30.0:
                 self.get_logger().info(f"[{self.name}] Finished EXPLORE override. Resuming NORMAL.")
                 self.nav_mode = "NORMAL"
             else:
-                if tt == 3: tt = 0 # Ignore shared map target during exploration
+                if tt == 3: tt = 0
                 
         if self.nav_mode == "NORMAL" and tt == 3 and wf_raw > 0:
             self.get_logger().info(f"[{self.name}] Obstacle blocks shared target. Starting WALL_FOLLOW.")
             self.nav_mode = "WALL_FOLLOW"
             self.nav_mode_start = now
-            self.wf_dir = 2 # Initial turn right (wall on left)
+            self.wf_dir = 2
             
         if self.nav_mode == "WALL_FOLLOW":
             if tt != 3:
@@ -346,14 +332,12 @@ class SortingNode(Node):
                     self.get_logger().info(f"[{self.name}] Obstacle cleared. Resuming DIRECT to target.")
                     self.nav_mode = "NORMAL"
 
-        # Pickup / Dropoff Trigger
         if is_close:
             colors = {1: 'red', 2: 'green', 3: 'blue'}
             if self.carrying == 0 and tt == 1:
                 self.get_logger().info(f"[{self.name}] robot has picked the object and the colour of that object is {colors[cid]}")
                 self.carrying = cid
                 
-                # Signal global picked
                 msg = String()
                 msg.data = f"{colors[cid]},{self.name},{self.x:.2f},{self.y:.2f}"
                 self.pub_picked.publish(msg)
@@ -369,13 +353,12 @@ class SortingNode(Node):
                 self.pub_cmd.publish(cmd)
                 return
 
-        # RL Execution
         wf = 1 if wf_raw > 0 else 0
         wl = 1 if self._lidar_wall_side(check_left=True) else 0
         wr = 1 if self._lidar_wall_side(check_left=False) else 0
         va = self._visited_ahead()
         
-        action = 0 # 0=FWD, 1=LEFT, 2=RIGHT
+        action = 0
         reason = ""
         use_fallback = True
         
@@ -391,20 +374,18 @@ class SortingNode(Node):
                 self.get_logger().error(f"[{self.name}] PPO prediction failed: {e}. Using fallback.")
                 use_fallback = True
                 
-        # Classical Overrides alongside PPO
-        if tt in [1, 2]: # Classical camera override
+        if tt in [1, 2]:
             if td == 1: action = 1; reason = "Camera override (turn left)"
             elif td == 2: action = 2; reason = "Camera override (turn right)"
             else: action = 0; reason = "Camera override (forward)"
-            use_fallback = False # Successfully applied override
-        elif tt == 3 and wf_raw == 0: # Shared destination shortest path (if clear)
+            use_fallback = False
+        elif tt == 3 and wf_raw == 0:
             if td == 1: action = 1; reason = "Shared map override (turn left)"
             elif td == 2: action = 2; reason = "Shared map override (turn right)"
             else: action = 0; reason = "Shared map override (forward)"
-            use_fallback = False # Successfully applied override
+            use_fallback = False
 
         if use_fallback:
-            # Fallback robust rules if RL fails
             if self.nav_mode == "WALL_FOLLOW":
                 if wf_raw > 0:
                     other_blocked = self._lidar_wall_side(check_left=(self.wf_dir != 2))
@@ -417,7 +398,7 @@ class SortingNode(Node):
                     action = 0
                     reason = "Wall Follow (forward)"
             elif wf_raw > 0: 
-                action = wf_raw # Obstacle avoidance
+                action = wf_raw
                 reason = "Obstacle fallback (turn " + ("left" if action==1 else "right") + ")"
             else: 
                 action = 0; reason = "Forward (no obstacle)"
@@ -433,7 +414,6 @@ class SortingNode(Node):
             self.last_action = action
             self.last_action_reason = reason
 
-        # Execute action
         if action == 0:
             cmd.linear.x = 0.3
         elif action == 1:

@@ -3,7 +3,6 @@ import random
 import numpy as np
 import gymnasium as gym
 
-# Abstract RL Training Environment matching the sensor inputs
 NUM_ROBOTS = 3
 NUM_ACTIONS = 3
 
@@ -14,10 +13,7 @@ ACT_RIGHT = 2
 class RLSensorEnv(gym.Env):
     def __init__(self):
         super(RLSensorEnv, self).__init__()
-        # Actions: 0=FWD, 1=LEFT, 2=RIGHT
         self.action_space = gym.spaces.Discrete(3)
-        # Observation space matching: 
-        # (carrying[4], target_type[4], target_dir[3], wall_front[2], ws_left[2], ws_right[2], visited_ahead[2], last_action[3])
         self.observation_space = gym.spaces.MultiDiscrete([4, 4, 3, 2, 2, 2, 2, 3])
         
         self.step_count = 0
@@ -28,14 +24,14 @@ class RLSensorEnv(gym.Env):
         super().reset(seed=seed)
         self.step_count = 0
         self.state = np.array([
-            random.randint(0, 3), # carrying
-            random.randint(0, 3), # target_type
-            random.randint(0, 2), # target_dir
-            0, # wall_front
-            0, # ws_left
-            0, # ws_right
-            0, # visited_ahead
-            0  # last_action (start moving fwd)
+            random.randint(0, 3),
+            random.randint(0, 3),
+            random.randint(0, 2),
+            0,
+            0,
+            0,
+            0,
+            0
         ])
         return self.state, {}
         
@@ -44,63 +40,55 @@ class RLSensorEnv(gym.Env):
         carrying, tt, td, wf, wl, wr, va, last_act = self.state
         r = 0.0
         
-        # Penalize time passing to encourage efficiency
         r -= 0.1
         
-        # Logical transitions and rewards
         if wf == 1 and action == ACT_FORWARD:
-            r -= 10.0  # Hitting a wall is terrible
+            r -= 10.0
             
-        # Avoid visited paths unless surrounded by obstacles
         surrounded = (wf == 1 and wl == 1 and wr == 1)
         if va == 1 and action == ACT_FORWARD:
             if surrounded:
-                r += 0.5  # Valid escape route
+                r += 0.5
             else:
-                r -= 3.0  # Avoid retracing if not cornered
+                r -= 3.0
 
-        # Penalize random rotations (e.g. turning left then right, or spinning)
         if action in [ACT_LEFT, ACT_RIGHT]:
             if action != last_act and last_act in [ACT_LEFT, ACT_RIGHT]:
-                r -= 2.0 # Wiggle penalty
+                r -= 2.0
             elif action == last_act:
-                r -= 0.5 # Spinning penalty, we want to move straight
+                r -= 0.5
                 
-        # Target seeking behavior (Mimics camera/shared map precedence)
         if tt in [1, 2, 3]:
             if td == 0:
                 if action == ACT_FORWARD:
                     r += 5.0
-                    tt = 0 # Reached target
-                else:
-                    r -= 2.0 # Ignored target
-            elif td == 1: # Target left
-                if action == ACT_LEFT:
-                    r += 3.0
-                    td = 0 # Centered target
+                    tt = 0
                 else:
                     r -= 2.0
-            elif td == 2: # Target right
+            elif td == 1:
+                if action == ACT_LEFT:
+                    r += 3.0
+                    td = 0
+                else:
+                    r -= 2.0
+            elif td == 2:
                 if action == ACT_RIGHT:
                     r += 3.0
-                    td = 0 # Centered target
+                    td = 0
                 else:
                     r -= 2.0
         
-        # Obstacle avoidance behavior (Mimics wall precedence)
         if wf == 1 and tt == 0:
             if wl == 1 and action == ACT_RIGHT:
-                r += 2.0 # Correctly avoid left wall
+                r += 2.0
             elif wr == 1 and action == ACT_LEFT:
-                r += 2.0 # Correctly avoid right wall
+                r += 2.0
             elif action in [ACT_LEFT, ACT_RIGHT]:
-                r += 1.0 # Good to turn away from front wall
+                r += 1.0
 
-        # Exploration behavior (Move straight in open space)
         if wf == 0 and va == 0 and tt == 0:
             if action == ACT_FORWARD:
-                r += 1.0  # Reward moving straight
-                # Randomly encounter things during exploration
+                r += 1.0
                 if random.random() < 0.2:
                     tt = random.randint(1, 3)
                     td = random.randint(0, 2)
@@ -113,13 +101,11 @@ class RLSensorEnv(gym.Env):
                 if random.random() < 0.1:
                     wr = 1
             else:
-                r -= 1.0  # Penalize turning when there's nothing in front
+                r -= 1.0
                 
-        # Turning clears the path in front
         if action in [ACT_LEFT, ACT_RIGHT]:
             wf = 0
             va = 0
-            # Side walls shift depending on turn
             if action == ACT_LEFT:
                 wr = wf
                 wl = 0
